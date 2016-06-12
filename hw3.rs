@@ -17,8 +17,6 @@ fn SolveIBVP(X : f64, N : u32, C : f64, T : f64) -> Vec<f64> {
         u2[0 as usize] = 1 as f64;
         u2[(N - 1) as usize] = 0f64;
 
-        println!("n = {}", n);
-
         for i in 1..N - 1 {
             let j = i as usize;
             u2[j] = u1[j] - C/2.0 * (u1[j + 1] - u1[j - 1])
