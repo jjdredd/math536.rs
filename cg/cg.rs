@@ -1,4 +1,5 @@
 use std::vec::Vec;
+use std::clone::Clone
 
 struct MCoor {
     row : usize,
@@ -53,5 +54,27 @@ impl CSM {
 
         self.C.push(MCoor {row : m, col : n});
         self.Elem.push(val);
+    }
+}
+
+
+// clone trait
+impl Clone for CSM {
+    pub clone(&self) -> CSM {
+        CSM {
+            N : self.N,
+            C : self.C.clone(),
+            Elem : self.Elem.clone(),
+        }
+    }
+
+    pub clone_from(&mut self, source: &Self) {
+        // Performs copy-assignment from source.
+
+        // a.clone_from(&b) is equivalent to a = b.clone()
+        // in functionality, but
+        // can be overridden to reuse the resources of
+        // a to avoid unnecessary allocations.
+
     }
 }
