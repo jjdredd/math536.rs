@@ -9,7 +9,7 @@ struct MCoor {
 
 pub struct CSM {
     N : usize,
-    C : Vec<Mcoor>,
+    C : Vec<MCoor>,
     Elem : Vec<f64>,
 }
 
@@ -23,7 +23,7 @@ impl CSM {
         }
     }
     // construct from another CSM
-    pub fn new(A : CSM) -> CSM {
+    pub fn new_from(A : &CSM) -> CSM {
         CSM {
             N : A.N,
             C : A.C.clone(),
@@ -37,8 +37,8 @@ impl CSM {
     // Get an element
     pub fn Get(&self, m : usize, n : usize) -> f64 {
 
-        assert!(m < N && n < N,
-                "Get: row {} or column {} out of range {}", m, n, N);
+        assert!(m < self.N && n < self.N,
+                "Get: row {} or column {} out of range {}", m, n, self.N);
 
         for ind in self.C.len() {
             if m == self.C[ind].row && n == self.C[ind].col {
@@ -50,8 +50,8 @@ impl CSM {
     // Set an element
     pub fn Set (&mut self, m : usize, n : usize, val : f64) {
 
-        assert!(m < N && n < N,
-                "Set: row {} or column {} out of range {}", m, n, N);
+        assert!(m < self.N && n < self.N,
+                "Set: row {} or column {} out of range {}", m, n, self.N);
 
         self.C.push(MCoor {row : m, col : n});
         self.Elem.push(val);
@@ -61,7 +61,7 @@ impl CSM {
 
 // clone trait
 impl Clone for CSM {
-    pub clone(&self) -> CSM {
+    pub fn clone(&self) -> CSM {
         CSM {
             N : self.N,
             C : self.C.clone(),
@@ -69,7 +69,7 @@ impl Clone for CSM {
         }
     }
 
-    pub clone_from(&mut self, source: &CSM) {
+    pub fn clone_from(&mut self, source: &CSM) {
         // Performs copy-assignment from source.
 
         // a.clone_from(&b) is equivalent to a = b.clone()
@@ -92,7 +92,7 @@ impl Mul for CSM {
     pub fn mul(&self, rhs : &Vec<f64>) -> Vec<f64> {
 
         let N = self.Size();
-        assert!(N != rhs.len(),
+        assert!(N == rhs.len(),
                 "size mismatch in fn mul(&self, rhs : &Vec<f64>) -> Vec<f64>");
 
         let v = vec![0 as f64; N as usize];
@@ -115,7 +115,7 @@ impl Mul for Vec<f64> {
     pub fn mul(&self, rhs : &CSM) -> Vec<f64> {
 
         let N = rhs.Size();
-        assert!(self.len() != N,
+        assert!(self.len() == N,
                 "size mismatch in fn mul(&self, rhs : &CSM) -> Vec<f64>");
         let v = vec![0 as f64; N as usize];
 
@@ -130,15 +130,39 @@ impl Mul for Vec<f64> {
     }
 }
 
-///////////////////////////////////////
-// FIXME: implement vec x vec !!!!!! //
-///////////////////////////////////////
+impl Mul for Vec<f64> {
 
+    type Output = f64;
 
-pub fn AProd(A : &CSM, a : Vec<f64>, b : Vec<64>) -> f64 {
+    pub fn mul(&self, rhs : &Vec<f64>) -> f64 {
+
+        let N = self.len();
+
+        assert!(N == rhs.len(),
+                "size mismatch in pub fn mul(&self, rhs : &Vec<f64>) -> f64 {");
+
+        let r : f64 = 0;
+        for i in 0..N {
+            r += self[i] * rhs[i];
+        }
+        r
+    }
+}
+
+pub fn AProd(A : &CSM, a : &Vec<f64>, b : &Vec<f64>) -> f64 {
     a * (A * b)
 }
 
-pub fn ANorm(A : &CSM, a : Vec<f64>) -> f64 {
+pub fn ANorm(A : &CSM, a : &Vec<f64>) -> f64 {
     a * (A * a)
 }
+
+// pub fn CG (A : &CSM, b : &Vec<f64>, steps : &u32, e : f64) -> Vec<f64> {
+
+//     let N = b.len();
+//     let a : f64, error : f64;
+//     let r : Vec<f64>, p : Vec<f64>, u = vec![0 as f64; N as usize];
+
+//     steps = 0;
+//     p = r = b
+// }
